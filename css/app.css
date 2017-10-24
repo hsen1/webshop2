@@ -1,0 +1,32 @@
+body{
+	font-family: 'Source Sans Pro', sans-serif;
+}
+
+.row{
+	max-width: 100%;
+	padding-top: 20px;
+}
+.menu > li > a {
+	padding: 1rem 2rem;
+}
+
+.top-bar {
+     padding: 0rem;
+     margin-bottom: 1rem;
+}
+
+@media print, screen and (min-width: 0em){
+	.pagination li {
+	    display: inline-block;
+	}
+}
+
+.pagination .current {
+    background: #ffae00;
+    color: black;
+}
+
+.ul {
+	list-style-type: none;
+	padding-top: 10px;
+}
