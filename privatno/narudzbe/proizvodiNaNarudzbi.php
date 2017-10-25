@@ -2,7 +2,8 @@
 
 if(isset($_GET["narudzba"])){
 	$izraz=$veza->prepare("select proizvod.naziv, proizvod.cijena,
- 	kosarica.kolicina as kolicina from proizvod 
+ 	narudzba.brojNarudzbe as broj, kosarica.kolicina as kolicina 
+ 	from proizvod 
  	inner join kosarica on kosarica.proizvod=proizvod.sifra 
  	inner join narudzba on kosarica.narudzba=narudzba.sifra
  	where kosarica.narudzba=:narudzba");
@@ -11,7 +12,6 @@ if(isset($_GET["narudzba"])){
 	
 	foreach ($rezultati as $red) {
 		echo "<li>Stavka: " . $red->naziv . " - Količina: " . $red->kolicina . " - Cijena: " . $red->cijena . " kn </li>";
-	}
-
-
+	}	
+	echo "<br/><h6>Narudžba broj " . $red->broj . "</h6>";
 }
