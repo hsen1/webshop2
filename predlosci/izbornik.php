@@ -47,6 +47,7 @@
       <li><a href="<?php echo $putanjaAPP;  ?>javno/kontakt.php"><i title="Kontakt" class="step fi-address-book size-48"></i> Kontakt</a></li>
       <?php 
       if(isset($_SESSION["logiran"]) && $_SESSION["logiran"]->uloga==="admin"): ?>
+		  <li><a href="<?php echo $putanjaAPP;  ?>dokumentacija/ZavršniRad_HrvojeŠen.pdf" target="_blank"><i title="dokumentacija" class="step fi-graph-trend size-48"></i> Dokumentacija</a></li>
           <li><a href="<?php echo $putanjaAPP;  ?>img/ERA.png" target="_blank"><i title="ERA" class="step fi-book size-48"></i> ERA</a></li>
           <?php endif; ?>
       <?php 

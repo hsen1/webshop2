@@ -113,7 +113,7 @@ if(isset($_POST["odustani"])){
 							
 							<input name="promjena" type="submit" class="button expanded" value="<?php 
 							if($proizvod->naziv==""){
-								echo "Dodaj novi";
+								echo "Dodaj";
 							}else{
 								echo "Promjeni";
 							}

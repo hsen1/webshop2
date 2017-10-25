@@ -156,7 +156,7 @@ if(isset($_POST["odustani"])){
 				<div class="cell large-10">
 					<input name="promjena" type="submit" class="button expanded" value="<?php 
 					if($narudzba->status==""){
-						echo "Dodaj novi";
+						echo "Dodaj";
 					}else{
 						echo "Promjeni";
 					}
