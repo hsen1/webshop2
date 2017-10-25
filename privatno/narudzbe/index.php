@@ -93,7 +93,7 @@ if(isset($_GET["stranica"])){
 							foreach ($rezultati as $red) :
 							?>
 							<tr>
-								<td><span style="cursor: pointer;" title="Klik za proizvode" id="n_<?php echo $red->sifra ?>" class="naziv"><?php echo $red->broj; ?></span></td>
+								<td><span style="cursor: pointer;" title="Klik za detalje" id="n_<?php echo $red->sifra ?>" class="naziv"><?php echo $red->broj; ?></span></td>
 								<td><?php echo $red->datum; ?></td>
 								<td><?php echo $red->status; ?></td>
 								<td><?php echo $red->napomena; ?></td>
@@ -120,9 +120,9 @@ if(isset($_GET["stranica"])){
 			</div>
 		</div>
 		<?php	include_once '../../predlosci/podnozje.php'; ?>
-		<div class="reveal" id="revealProizvodi" data-reveal>
-		  <h4>Proizvodi</h4>
-		  <ol id="proizvodi">
+		<div class="reveal" id="revealDetalji" data-reveal>
+		  <h5>Detalji narudžbe</h5>
+		  <ol id="detalji">
 		  	
 		  </ol>
 		  <button class="close-button" data-close aria-label="Close modal" type="button">
@@ -132,12 +132,12 @@ if(isset($_GET["stranica"])){
 		<?php	include_once '../../predlosci/skripte.php'; ?>
 		<script>
 			$(".naziv").click(function(){
-				$("#proizvodi").html("Klik za proizvode");
+				$("#detalji").html("Klik za detalje");
 				var element = $(this);
 				var id = element.attr("id").split("_")[1];
 				$.get( "proizvodiNaNarudzbi.php?narudzba=" + id, function( vratioServer ) {
-					$("#proizvodi").html(vratioServer);
-					$("#revealProizvodi").foundation('open');
+					$("#detalji").html(vratioServer);
+					$("#revealDetalji").foundation('open');
 				});
 				return false;
 			});

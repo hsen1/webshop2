@@ -8,12 +8,6 @@ if(isset($_GET["stranica"])){
 	}
 }
 
-if(isset($_GET["sifra"])){
-	$izraz=$veza->prepare("select * from proizvod where sifra=:sifra");
-	$izraz->execute(array("sifra"=>$_GET["sifra"]));
-	$narudzba = $izraz->fetch(PDO::FETCH_OBJ);
-}
-
 $ukupno=0;
 
 //dohvati akciju
@@ -30,14 +24,15 @@ if($action=='dodaj' && $_SERVER['REQUEST_METHOD']=='POST') {
 	$proizvod = $izraz->fetch();
 	
 	$trenutnaKolicina = $_SESSION['proizvod'][$_POST['sifra']]['kol']+1; //dodavanje količine u košarici
-	$_SESSION['proizvod'][$_POST['sifra']]=array('kol'=>$trenutnaKolicina,'naziv'=>$proizvod['naziv'],'slika'=>$proizvod['slika'],'cijena'=>$proizvod['cijena']);
+
+	$_SESSION['proizvod'][$_POST['sifra']]=array('kol'=>$trenutnaKolicina,'naziv'=>$proizvod['naziv'],'slika'=>$proizvod['slika'],'cijena'=>$proizvod['cijena'], 'sifra' => $_POST['sifra']);
 	$proizvod='';
 	header("Location:index.php");
 }
 
 //izbriši sve
 if($action=='isprazniSve') {
-	$_SESSION['proizvod'] =array();
+	$_SESSION['proizvod'] = [];
 	header("Location:index.php");	
 }
 
@@ -58,8 +53,39 @@ $proizvodi = $izraz->fetchAll();
 
 //napravi narudžbu
 if($action=='kupi') {
+
+	$ukupnaCijena = 0;
+	foreach($_SESSION['proizvod'] as $a){
+		$ukupnaCijena += $a["kol"]*$a["cijena"];
+	}
+
+	if($ukupnaCijena > 2000){
+		$tipDostave = 1;
+	}else{
+		$tipDostave = 2;
+	}
+
+	$sifraKupca = $_SESSION["logiran"]->sifra;
 	
+	// ubaci u narudzbe
+	$izraz=$veza->prepare("insert into narudzba (brojNarudzbe, datum, status, napomena, dostava, kupac) values (?,?,?,?,?,?)");
+	$izraz->execute(["/2017", date("Y/m/d h:i:sa"), "u obradi", "", $tipDostave, $sifraKupca]);
+
+	// ne znam koliko je sigurno, jel dohvaca zadnji id ove veze 
+	// ili zadnji id svih inserta, treba provjera mozda po id-u kupca
+	$idInserta = $veza->lastInsertId();
+	//echo $idInserta;
+	
+	// ubaci sve proizvode u kosaricu
+	foreach($_SESSION["proizvod"] as $item)
+	{
+		$izraz=$veza->prepare("insert into kosarica (kolicina,cijena,proizvod,narudzba) values (?,?,?,?)");
+		$izraz->execute([$item["kol"], $item["cijena"], $item["sifra"], $idInserta]);
+	}
+	
+	$_SESSION['proizvod'] = [];
 	header("Location:index.php");
+	
 }
 
 ?>
@@ -130,16 +156,16 @@ if($action=='kupi') {
 								<td><?php echo $proizvod['naziv']?></td>
 								<td><?php echo $proizvod['cijena']?> kn</td>
 								<td><?php echo $proizvod['kol']?></td>
-								<td><a href="index.php?akcija=isprazni&sifra=<?php print $key?>" class="button alert">Obriši</a></td>
+								<td><a href="index.php?akcija=isprazni&sifra=<?php echo $key?>" class="button alert">Obriši</a></td>
 						    </tr>
 						    <?php $ukupno=$ukupno+$proizvod['cijena']*$proizvod['kol'];?>
 						    <?php endforeach;?>
 						    <tr>
-						    	<td colspan="5" align="right"><h5>Ukupno: <?php print $ukupno?> kn</h5></td>
+						    	<td colspan="5" align="right"><h5>Ukupno: <?php echo $ukupno?> kn</h5></td>
 						    </tr>
 						</table>
 						<div class="large-auto cell">
-							<a href="index.php?akcija=kupi" class="success button expanded">Kupi</a>
+							<a href="index.php?akcija=kupi" class="success button expanded" onclick="return potvrdiNarudzbu();">Kupi</a>
 						</div>
 						<?php endif;?>
 						</div>
@@ -179,6 +205,16 @@ if($action=='kupi') {
 		</div>
 		<?php	include_once '../../predlosci/podnozje.php'; ?>
 		<?php	include_once '../../predlosci/skripte.php'; ?>
-		
+		<script>
+		function potvrdiNarudzbu()
+		{
+			var r=confirm("Želite li potvrditi svoju narudžbu?");
+			if(r == true){
+				alert('Vaša narudžba je zaprimljena!');
+			}else{
+				return false;
+			}
+		}
+		</script>
 	</body>
 </html>
